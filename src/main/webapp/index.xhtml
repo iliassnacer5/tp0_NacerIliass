@@ -1,0 +1,97 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="jakarta.faces.html"
+      xmlns:f="jakarta.faces.core"
+      xmlns:p="http://primefaces.org/ui"
+      xmlns:ui="jakarta.faces.facelets">
+<h:head>
+    <title>Chat simple avec API (TP 0)</title>
+    <h:outputStylesheet library="css" name="styles.css"/>
+    <h:outputScript library="js" name="scripts.js"/>
+</h:head>
+
+<h:body>
+    <div class="content-wrapper">
+        <div class="header">
+            <h3>Chat avec API (TP 0)</h3>
+            <p:commandButton value="Nouveau chat"
+                             action="#{chatBean.nouveauChat()}"
+                             process="@this"
+                             update="@all"
+                             styleClass="ui-button-danger"/>
+        </div>
+
+        <h:form id="chatForm">
+            <h:panelGrid columns="2" columnClasses="question-area, history-area">
+
+                <h:panelGroup layout="block" styleClass="input-output">
+
+                    <div class="role-selection">
+                        <h:outputLabel value="Rôle de l'API : " for="roleSelect"/>
+                        <p:selectOneMenu id="roleSelect"
+                                         value="#{chatBean.roleAPI}"
+                                         disabled="#{chatBean.roleAPI != null}">
+                            <f:selectItem itemLabel="Sélectionner un rôle" itemValue="#{null}"/>
+                            <f:selectItem itemLabel="Helpful assistant" itemValue="Helpful assistant"/>
+                            <f:selectItem itemLabel="Traducteur français-anglais" itemValue="Traducteur français-anglais"/>
+                            <f:selectItem itemLabel="Guide touristique" itemValue="Guide touristique"/>
+                        </p:selectOneMenu>
+                    </div>
+
+                    <h:outputLabel value="Question :" for="questionText"/>
+                    <h:inputTextarea id="questionText"
+                                     value="#{chatBean.question}"
+                                     rows="5" cols="50"
+                                     required="true"
+                                     requiredMessage="La question ne peut pas être vide."
+                                     styleClass="question-textarea"/>
+                    <p:commandButton value="Copier question"
+                                     type="button"
+                                     onclick="copyToClipboard(document.getElementById('chatForm:questionText'));"/>
+                    <br/>
+
+                    <h:outputLabel value="Réponse :" for="responseText"/>
+                    <h:inputTextarea id="responseText"
+                                     value="#{chatBean.reponse}"
+                                     rows="5" cols="50"
+                                     readonly="true"
+                                     styleClass="response-textarea"/>
+                    <p:commandButton value="Copier réponse"
+                                     type="button"
+                                     onclick="copyToClipboard(document.getElementById('chatForm:responseText'));"/>
+                    <br/>
+
+                    <h:messages globalOnly="false" styleClass="messages" showSummary="false" showDetail="true"/>
+
+                    <div class="action-buttons">
+                        <p:commandButton value="Envoyer question"
+                                         action="#{chatBean.envoyerQuestion()}"
+                                         update=":chatForm:responseText :chatForm:historyText :chatForm:roleSelect"
+                                         styleClass="ui-button-success"/>
+                        <p:commandButton value="Effacer"
+                                         action="#{chatBean.effacerQuestionReponse()}"
+                                         process="@this"
+                                         update=":chatForm:questionText :chatForm:responseText"
+                                         immediate="true"
+                                         styleClass="ui-button-secondary"/>
+                    </div>
+                </h:panelGroup>
+
+                <h:panelGroup layout="block" styleClass="history">
+                    <h:outputLabel value="Historique de la conversation :" for="historyText"/>
+                    <h:inputTextarea id="historyText"
+                                     value="#{chatBean.conversation}"
+                                     rows="20" cols="50"
+                                     readonly="true"
+                                     styleClass="history-textarea"/>
+                    <p:commandButton value="Copier historique"
+                                     type="button"
+                                     onclick="copyToClipboard(document.getElementById('chatForm:historyText'));"/>
+                </h:panelGroup>
+
+            </h:panelGrid>
+        </h:form>
+    </div>
+</h:body>
+</html>
